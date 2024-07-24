@@ -145,10 +145,35 @@ alu alu_inst (
 //Memory
 
 
+always_ff @(posedge clk_slow or posedge reset) begin
+    if (reset) begin
+        $display("Resetting at time: %0t", $time);
+    end else begin
+        $display("Instruction : %h", instruction);
+    end
+end
+
+
 //Write Back
 
 
 //Display to LEDs
-
+// LED assignments
+assign leds[0] = alu_op[0]; // Least significant bit of ALU operation
+assign leds[1] = alu_op[1];
+assign leds[2] = alu_op[2];
+assign leds[3] = alu_op[3];
+assign leds[4] = alu_op[4];
+assign leds[5] = mem_read_enable;
+assign leds[6] = mem_write_enable;
+assign leds[7] = reg_write_enable;
+assign leds[8] = instruction[30]; //function 7 toggle
+assign leds[9]  = instruction[14];  //function3 [2]
+assign leds[10]  = instruction[13];  //function3 [1]
+assign leds[11] = instruction[12];  //function3 [0]
+assign leds[12] = (instruction[6:0] == 7'b0110011 ) ? 1 : 0; // Register-Type
+assign leds[13] = (instruction[6:0] == 7'b0010011 ) ? 1 : 0; // Immediate-Type
+assign leds[14] = (instruction[6:0] == 7'b0000011 ) ? 1 : 0; // Loading
+assign leds[15] = (instruction[6:0] == 7'b0100011 ) ? 1 : 0; // Storing
 
 endmodule

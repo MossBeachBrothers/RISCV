@@ -112,6 +112,7 @@ module control_unit (
                             
                             endcase
                         end
+                        //read data from memory into register
                         LOAD: begin 
                             //set memory read
                             mem_read_enable = 1;
@@ -121,10 +122,24 @@ module control_unit (
                             immediate = instruction[31:20];
                             //load_operation
                             load_operation = instruction[14:12]
-                            alu_op = 5'b01010 //Add op code for address
+                            alu_op = 5'b01010 //Add code to add immediate to reg address
+
 
                         end
+                        //write data from register to memory
                         STORE: begin
+                            //immediate used to compute memory addres to store
+                            immediate = {instruction[31:25], instruction[11:7]};
+                            
+                            //type of store operation, byte, halfword, word
+                            store_operation = instruction[14:12]
+                            //source register whos value will be written to memory
+                            reg_read_address2 = instruction[24:20];
+                            
+                            //set reg read, mem write
+                            reg_read_enable = 1;
+                            mem_write_enable = 1;
+                            alu_op = 5'b01010; //Add code to add immediate to reg address
                         end
                         JAL: begin
                         end

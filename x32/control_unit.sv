@@ -12,10 +12,13 @@ module control_unit (
     output logic mem_write_enable,
     output logic reg_read_enable, 
     output logic reg_write_enable,
-    output logic jump,
+    output logic jump;
+    output logic is_jal;
+    output logic is_jalr;
+    output logic [31:0] imm_j //J-type immediate for JAL 
 );
 
-
+    //Func 7 codes
     localparam R_TYPE = 7'b0110011;
     local I_TYPE = 7'b0010011;
     localparam LOAD = 7'b0000011;
@@ -26,6 +29,8 @@ module control_unit (
     localparam JALR = 7'b1100111 //Jump and Link Register
 
 
+
+    //Func 3 Codes
 
      //R-Type Operations
     localparam ADD_SUB  = 3'b000; // Add or Subtract
@@ -70,7 +75,7 @@ module control_unit (
         reg_read_address1 = instruction[19:15]; //source reg 1
         reg_read_address2 = 5'bxxxxxx; //source reg 2
         //destinations
-        reg_write_addr = instruction[11:7];
+        reg_write_address = instruction[11:7];
 
         if (instruction != 32'b0) begin
             case (instruction[6:0])
@@ -141,9 +146,23 @@ module control_unit (
                             mem_write_enable = 1;
                             alu_op = 5'b01010; //Add code to add immediate to reg address
                         end
+                        //Jump and Link
                         JAL: begin
+                            jump = 1;
+                            is_jal = 1;
+                            reg_write_enable = 1;
+                            reg_write_address = instruction[11:7];//set desination register for return address
+                            imm_j = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0}; //represent jump address
                         end
+                        //Jump and Link Register
                         JALR: begin
+                            jump=1;
+                            is_jalr = 1;
+                            reg_read_enable = 1;
+                            reg_write_enable = 1;
+                            reg_read_address1 = instruction[19:15]; //set base register to compute jump address
+                            reg_write_address = instruction[11:7]; //set desination register for storing jump address
+                            immediate = {{20{instruction[31]}}, instruction[31:20]}; //get immediate for target address
                         end
             endcase
 

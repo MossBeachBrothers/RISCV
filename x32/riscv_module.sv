@@ -24,9 +24,15 @@ logic[2:0] load_operation;
 logic[2:0] store_operation;
 logic[4:0] alu_op
 
+logic[31:0] alu_result; 
 
-logic[31:0] alu_result;
-logic jump;
+logic[31:0] program_counter //current Program Counter
+logic[31:0] jump_address
+logic jump; 
+logic is_jal, is_jalr; //signals for JAl, JALR
+
+
+
 
 //Control Signals
 logic mem_read_enable, mem_write_enable;
@@ -41,13 +47,13 @@ debounce debounce_inst (
     .btn_clean(result)
 );
 
-//Clock?
+//Slow Clock
 
 
 
 
 
-//Instruction Fetch
+//Instruction Fetchs
 program_counter pc_inst (
     //input
     .clk(clk),
@@ -89,7 +95,9 @@ control_unit control_unit_inst (
     .immediate(immediate),
     .load_operation(load_operation),
     .store_operation(store_operation),
-    .jump(jump)
+    .jump(jump),
+    .is_jal(is_jal),
+    .is_jalr(is_jalr),
     
     //address
     .reg_read_address1(reg_read_address1),
@@ -101,6 +109,7 @@ control_unit control_unit_inst (
     .mem_write_enable(mem_write_enable),
     .reg_read_enable(reg_read_enable),
     .reg_write_enable(reg_write_enable),
+    .imm_j(imm_j) //immediate jump address J-Type
 )
 
 //Execute
@@ -144,7 +153,18 @@ alu alu_inst (
 //alu_result ---> memory 
 //Memory
 
+//Determine Jumping
+always_comb begin
+    if (is_jal) begin
+        jump_address = program_counter + imm_j; //JAL
+    end else if (is_jalr) begin
+        jump_address = reg_read_data1 + immediate; //JALR
+    end else begin
+        jump_address = 32'b0 //set default
+    end
+end
 
+//Clock
 always_ff @(posedge clk_slow or posedge reset) begin
     if (reset) begin
         $display("Resetting at time: %0t", $time);
@@ -152,9 +172,6 @@ always_ff @(posedge clk_slow or posedge reset) begin
         $display("Instruction : %h", instruction);
     end
 end
-
-
-//Write Back
 
 
 //Display to LEDs

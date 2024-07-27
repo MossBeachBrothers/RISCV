@@ -5,8 +5,8 @@ module riscv_processor (
     //display data
     output logic [15:0] leds,
     output logic [6:0] seg, //7 segment displays
-    output logic [3:0] an, //4 bit segment output
-)
+    output logic [3:0] an //4 bit segment output
+);
 
 
 logic clk_slow;
@@ -15,19 +15,19 @@ logic reset;
 
 logic [31:0] instruction;
 logic[31:0] reg_read_data1, reg_read_data2; //data read from register
-logic[31:0] mem_read_data //data read from memory
+logic[31:0] mem_read_data;  //data read from memory
 
 
 logic[11:0] immediate; //constant 
 logic[4:0] reg_read_address1, reg_read_address2, reg_write_address; //register addreses
 logic[2:0] load_operation;
 logic[2:0] store_operation;
-logic[4:0] alu_op
+logic[4:0] alu_op;
 
 logic[31:0] alu_result; 
 
-logic[31:0] program_counter //current Program Counter
-logic[31:0] jump_address
+logic[31:0] program_counter;//current Program Counter
+logic[31:0] jump_address;
 logic jump; 
 logic is_jal, is_jalr; //signals for JAl, JALR
 
@@ -44,7 +44,7 @@ logic reg_read_enable, reg_write_enable;
 debounce debounce_inst (
     .clk(clk),
     .btn(btn_reset),
-    .btn_clean(result)
+    .btn_clean(reset)
 );
 
 //Slow Clock
@@ -60,10 +60,11 @@ program_counter pc_inst (
     .reset(reset),
     .jump(jump), //if jump, load data from jump_address
     .jump_address(alu_result),
-
+    .is_jal(is_jal),
+    .is_jalr(is_jalr)
     //output
     .pc(program_counter) //address of next pc instruction
-)
+);
 
 memory memory_inst (
     //input 
@@ -75,13 +76,12 @@ memory memory_inst (
     .mem_write_enable(mem_write_enable),
     .reg_read_enable(reg_read_enable),
     .reg_data(reg_read_data2),
-    .instruction_address(program_counter) //next address from pc
+    .instruction_address(program_counter), //next address from pc
 
     //output
     .instruction(instruction), //32 bit instruction
     .mem_read_data(mem_read_data) //data read from mem
-)
-
+);
 //Instruction Decode
 
 control_unit control_unit_inst (
@@ -110,7 +110,7 @@ control_unit control_unit_inst (
     .reg_read_enable(reg_read_enable),
     .reg_write_enable(reg_write_enable),
     .imm_j(imm_j) //immediate jump address J-Type
-)
+);
 
 //Execute
 register_file register_file_inst (
@@ -135,8 +135,8 @@ register_file register_file_inst (
 
     //data
     .reg_read_data1(reg_read_data1),
-    .reg_read_data2(reg_read_data2), 
-)
+    .reg_read_data2(reg_read_data2)
+);
 
 
 alu alu_inst (
@@ -148,7 +148,7 @@ alu alu_inst (
     //output
     .result(alu_result),
     .zero() //indicates whether result is 0
-)
+);
 
 //alu_result ---> program_counter as jump address if jump
 //alu_result ---> memory 
@@ -157,11 +157,11 @@ alu alu_inst (
 //Determine Jumping
 always_comb begin
     if (is_jal) begin
-        jump_address = program_counter + imm_j; //JAL
+        jump_address = program_counter + imm_j; //if JAL, set jump to pc + immediate offset
     end else if (is_jalr) begin
-        jump_address = reg_read_data1 + immediate; //JALR
+        jump_address = reg_read_data1 + immediate; //if JALR, set jump to reg address + immediate offset
     end else begin
-        jump_address = 32'b0 //set default
+        jump_address = 32'b0; //set default
     end
 end
 

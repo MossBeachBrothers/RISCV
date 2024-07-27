@@ -14,8 +14,8 @@ module register_file (
     input logic [31:0] mem_read_data, //data from memory address to be written
     
     output logic [31:0] reg_read_data1,
-    output logic [31:0] reg_read_data2,
-)
+    output logic [31:0] reg_read_data2
+);
 
 
 //To start, define an array of 32 registers, each 32 bits wide
@@ -61,8 +61,8 @@ always @(posedge clk or posedge reset) begin
             LB : registers[reg_write_address] = {{24{mem_read_data[7]}}, mem_read_data[7:0]}; // load byte and sign extend to 32
             LH : registers[reg_write_address] = {{16{mem_read_data[15]}}, mem_read_data[15:0]}; //load halfword and sign extend to 32
             LW : registers[reg_write_address] = mem_read_data; //load 32 bit word
-            LBU : registers[reg_write_address] = {24'b0, mem_read_data[7:0]} //load byte and zero extend to 32
-            LHU: registers[reg_write_address] = {16'b0, mem_read_data[15:0]} //load halfword and zero extend to 32
+            LBU : registers[reg_write_address] = {24'b0, mem_read_data[7:0]}; //load byte and zero extend to 32
+            LHU: registers[reg_write_address] = {16'b0, mem_read_data[15:0]}; //load halfword and zero extend to 32
             endcase
 
         end else begin 

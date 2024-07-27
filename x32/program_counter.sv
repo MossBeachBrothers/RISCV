@@ -8,11 +8,12 @@ module program_counter (
     input wire reset,
     input wire [31:0] jump_address,
     input wire jump, 
-
+    input wire is_jal, //Jump and Link
+    input wire is_jalr, //Jump and Link Register
     output reg [31:0] pc
 );
 
-    initial currentPC = 32'h0
+    initial pc = 32'h0;
 
     always @(posedge clk or posedge reset)
     begin

@@ -1,4 +1,4 @@
-`timscale 1ns / 1ps
+``timescale 1ns / 1ps
 
 module memory (
     input logic clk, 
@@ -31,9 +31,9 @@ module memory (
     localparam DATA_MEMORY_END  = 3'd192;
 
     //types of store operations
-    localparam STOREBYTE = 3'b000; //store byte
-    localparam STOREHALFWORD = 3'b001;  //store half word
-    localparam STOREWORD = 3'b010; //store word
+    localparam STORE_BYTE = 3'b000; //store byte
+    localparam STORE_HALF_WORD = 3'b001;  //store half word
+    localparam STORE_WORD = 3'b010; //store word
 
 
     //assign output values
@@ -48,8 +48,9 @@ module memory (
     
         if (reset) begin
             //set instruction memory to all zero
+            integer i;
             for (i = 0; i < 256; i = i+1) begin
-                instruction_memory_array[i] = 32'h00000000
+                instruction_memory_array[i] = 32'h00000000;
              end
              
             //set data memory to all zero 
@@ -58,7 +59,7 @@ module memory (
              end
 
              //set default memory locations
-             data_mem_array[5] = 32'hFFFFFFE0;
+             data_memory_array[5] = 32'hFFFFFFE0;
 
 
              //Custom Memory Locations
@@ -69,9 +70,9 @@ module memory (
             //store data from register into memory
             if (reg_read_enable) begin
                 case (store_operation)
-                    STOREBYTE: data_memory_array[mem_address >> 2] = reg_data[7:0] //8 bit
-                    STOREHALFWORD: data_memory_array[mem_address >> 2] = reg_data[15:0] //16 bit
-                    STOREWORD: data_memory_array[mem_address >> 2] = reg_data //32 bit
+                    STORE_BYTE: data_memory_array[mem_address >> 2] = reg_data[7:0]; //8 bit
+                    STORE_HALF_WORD: data_memory_array[mem_address >> 2] = reg_data[15:0]; //16 bit
+                    STORE_WORD: data_memory_array[mem_address >> 2] = reg_data; //32 bit
                 endcase
              end
          end

@@ -4,9 +4,9 @@ module alu (
     input logic [11:0] immediate, //constant
     input logic [3:0] op_code, //specifies ALU op
 
-    output logic [31:0] alu_result,
+    output logic [31:0] result,
     output logic zero //indicates if result was zero
-)
+);
 
 
 //Register to Register Instructions
@@ -54,41 +54,41 @@ localparam ANDI = 5'b10010; //bitwise AND between A and sign-extended immediate 
 
 //sign-extend immediate to 32 bits
 logic [31:0] immediate_extended;
-assign immediate_extened = {{20{immediate[11]}}, immediate}
+assign immediate_extended = {{20{immediate[11]}}, immediate};
 
 
 always_comb begin
     case (op_code) //perform OP CODE operation
             // R-Type Operations
-            ADD:  result = operand_a + operand_b;
-            SUB:  result = operand_a - operand_b;
-            SLL:  result = operand_a << operand_b[4:0];
-            SLT:  result = ($signed(operand_a) < $signed(operand_b)) ? 32'd1 : 32'd0;
-            SLTU: result = (operand_a < operand_b) ? 32'd1 : 32'd0; //unsigned
-            XOR:  result = operand_a ^ operand_b;
-            SRL:  result = operand_a >> operand_b[4:0];
-            SRA:  result = $signed(operand_a) >>> operand_b[4:0];
-            OR:   result = operand_a | operand_b;
-            AND:  result = operand_a & operand_b;
+            ADD:  result = operandA + operandB;
+            SUB:  result = operandA - operandB;
+            SLL:  result = operandA << operandB[4:0];
+            SLT:  result = ($signed(operandA) < $signed(operandB)) ? 32'd1 : 32'd0;
+            SLTU: result = (operandA < operandB) ? 32'd1 : 32'd0; //unsigned
+            XOR:  result = operandA ^ operandB;
+            SRL:  result = operandA >> operandB[4:0];
+            SRA:  result = $signed(operandA) >>> operandB[4:0];
+            OR:   result = operandA | operandB;
+            AND:  result = operandA & operandB;
 
             // I-Type Operations
-            ADDI: result = operand_a + immediate_extended;
-            SLLI: result = operand_a << immediate_extended[4:0];
-            SLTI: result = ($signed(operand_a) < $signed(immediate_extended)) ? 32'd1 : 32'd0;
-            SLTUI:result = (operand_a < immediate_extended) ? 32'd1 : 32'd0; //unsigned
-            XORI: result = operand_a ^ immediate_extended;
-            SRLI: result = operand_a >> immediate_extended[4:0];
-            SRAI: result = $signed(operand_a) >>> immediate_extended[4:0];
-            ORI:  result = operand_a | immediate_extended;
-            ANDI: result = operand_a & immediate_extended;
+            ADDI: result = operandA + immediate_extended;
+            SLLI: result = operandA << immediate_extended[4:0];
+            SLTI: result = ($signed(operandA) < $signed(immediate_extended)) ? 32'd1 : 32'd0;
+            SLTUI:result = (operandA < immediate_extended) ? 32'd1 : 32'd0; //unsigned
+            XORI: result = operandA ^ immediate_extended;
+            SRLI: result = operandA >> immediate_extended[4:0];
+            SRAI: result = $signed(operandA) >>> immediate_extended[4:0];
+            ORI:  result = operandA | immediate_extended;
+            ANDI: result = operandA & immediate_extended;
 
-            default: result = 32'd0
+            default: result = 32'd0;
     endcase
-    //$display("Time: %0t, ALU Operation: %b, Operand A: %h, Operand B: %h, Immediate: %h, Result: %h", $time, op_code, operand_a, operand_b, immediate, result);
+    //$display("Time: %0t, ALU Operation: %b, Operand A: %h, Operand B: %h, Immediate: %h, Result: %h", $time, op_code, operandA, operandB, immediate, result);
 
 end
 
-assign zero = (result == 32'd0) //set boolean zero
+assign zero = (result == 32'd0); //set boolean zero
 
 endmodule
 

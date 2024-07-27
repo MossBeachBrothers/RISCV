@@ -12,28 +12,28 @@ module control_unit (
     output logic mem_write_enable,
     output logic reg_read_enable, 
     output logic reg_write_enable,
-    output logic jump;
-    output logic is_jal;
-    output logic is_jalr;
+    output logic jump,
+    output logic is_jal,
+    output logic is_jalr,
     output logic [31:0] imm_j //J-type immediate for JAL 
 );
 
     //Func 7 codes
     localparam R_TYPE = 7'b0110011;
-    local I_TYPE = 7'b0010011;
+    localparam I_TYPE = 7'b0010011;
     localparam LOAD = 7'b0000011;
     localparam STORE = 7'b0100011;
 
 
-    localparam JAL =  7'b1101111: //Jump and Link
-    localparam JALR = 7'b1100111 //Jump and Link Register
+    localparam JAL =  7'b1101111; //Jump and Link
+    localparam JALR = 7'b1100111;//Jump and Link Register
 
 
 
     //Func 3 Codes
 
      //R-Type Operations
-    localparam ADD_SUB  = 3'b000; // Add or Subtract
+    localparam ADD_OR_SUB  = 3'b000; // Add or Subtract
     localparam SLL  = 3'b001; // Logical Shift Left
     localparam SLT  = 3'b010; // Set Less Than
     localparam SLTU = 3'b011; // Set Less Than Unsigned
@@ -81,7 +81,7 @@ module control_unit (
             case (instruction[6:0])
                         R_TYPE: begin
                             //get data from register 2
-                            reg_read_address2 = instruction[24:20]
+                            reg_read_address2 = instruction[24:20];
 
                             //set reg read/write
                             reg_read_enable = 1;
@@ -111,7 +111,9 @@ module control_unit (
                                 SLTI: alu_op = 5'b01100;
                                 SLTUI: alu_op = 5'b01101;
                                 XORI: alu_op = 5'b01110;
-                                SRI: begin end
+                                SRI: begin 
+                                    //SRI 
+                                end
                                 ORI: alu_op = 5'b10001;
                                 ANDI: alu_op = 5'b10010;
                             
@@ -126,8 +128,8 @@ module control_unit (
                             //get immediate value
                             immediate = instruction[31:20];
                             //load_operation
-                            load_operation = instruction[14:12]
-                            alu_op = 5'b01010 //Add code to add immediate to reg address
+                            load_operation = instruction[14:12];
+                            alu_op = 5'b01010; //Add code to add immediate to reg address
 
 
                         end
@@ -137,7 +139,7 @@ module control_unit (
                             immediate = {instruction[31:25], instruction[11:7]};
                             
                             //type of store operation, byte, halfword, word
-                            store_operation = instruction[14:12]
+                            store_operation = instruction[14:12];
                             //source register whos value will be written to memory
                             reg_read_address2 = instruction[24:20];
                             
@@ -166,8 +168,6 @@ module control_unit (
                         end
             endcase
 
-
         end
-
 
 endmodule

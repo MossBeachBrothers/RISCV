@@ -123,6 +123,7 @@ register_file register_file_inst (
     .reg_read_address2(reg_read_address2),
     .reg_write_address(reg_write_address),
     .reg_write_data(alu_result), //write data from alu result
+    .load_operation(load_operation),
     .mem_read_data(mem_read_data), //get data from memory
 
     //control signals

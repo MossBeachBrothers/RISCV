@@ -2,7 +2,7 @@
 
 This project implements a RISC-V processor core capable of executing instructions through a pipelined architecture. The processor initially uses 4 pipeline stages and is extended to 7 stages using a Finite State Machine (FSM).
 
-## Pipeline Stages
+### Pipeline Stages
 
 Here's a refined version of that sentence:
 
@@ -17,12 +17,8 @@ The project expands on 4-stage pipeline of Fetch, Decode, Execute, and Write-Bac
 6. **Write Memory**
 7. **Write Register**
 
-## Implementation Details
 
-- **Sequential Blocks**: Used to transfer between states along the clock cycle and progress through pipeline stages.
-- **Status Signals**: Facilitate transitions between states, enabling multi-cycle functionality for more complex modules.
-
-## Submodules
+### Submodules
 
 The execution of pipeline stages is facilitated by several submodules, each responsible for specific operations:
 
